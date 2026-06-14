@@ -1,837 +1,125 @@
 <!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>はれもよう</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --ink: #243238;
-      --muted: #66767d;
-      --line: #d7e2df;
-      --paper: #fbfcf9;
-      --soft: #eef6f1;
-      --leaf: #4f8f73;
-      --leaf-dark: #2f6b53;
-      --sun: #f3bd57;
-      --sky: #9ac4d1;
-      --rose: #d98484;
-      --white: #ffffff;
-      --shadow: 0 16px 44px rgba(36, 50, 56, .12);
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Yu Gothic UI", sans-serif;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>はれもよう</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="sky-bg" aria-hidden="true">
+      <div class="bg-fuwahare bg-seed one"></div>
+      <div class="bg-fuwahare bg-middle two"></div>
+      <div class="bg-fuwahare bg-rainbow three"></div>
+      <div class="bg-fuwahare bg-full four"></div>
+      <div class="bg-fuwahare bg-middle five"></div>
+    </div>
 
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 14% 0%, rgba(243, 189, 87, .22), transparent 28rem),
-        linear-gradient(160deg, #f8fbf6 0%, #eaf5f2 52%, #f7f1ea 100%);
-      min-height: 100vh;
-    }
-
-    button,
-    textarea,
-    input {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
-
-    .app {
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 28px 0 40px;
-    }
-
-    .top {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 280px;
-      gap: 24px;
-      align-items: end;
-      margin-bottom: 22px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 16px;
-    }
-
-    .weather-mark {
-      position: relative;
-      width: 54px;
-      height: 54px;
-      flex: 0 0 auto;
-    }
-
-    .sun {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--sun);
-      top: 2px;
-      left: 5px;
-      box-shadow: 0 0 0 8px rgba(243, 189, 87, .22);
-    }
-
-    .cloud {
-      position: absolute;
-      width: 42px;
-      height: 21px;
-      border-radius: 999px;
-      background: var(--white);
-      left: 12px;
-      bottom: 7px;
-      box-shadow: var(--shadow);
-    }
-
-    .cloud::before,
-    .cloud::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      background: var(--white);
-    }
-
-    .cloud::before {
-      width: 22px;
-      height: 22px;
-      left: 7px;
-      top: -10px;
-    }
-
-    .cloud::after {
-      width: 16px;
-      height: 16px;
-      right: 8px;
-      top: -6px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 5vw, 4.2rem);
-      line-height: 1;
-      letter-spacing: 0;
-    }
-
-    .lead {
-      max-width: 720px;
-      margin: 0;
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.8;
-    }
-
-    .today {
-      background: rgba(255, 255, 255, .72);
-      border: 1px solid rgba(255, 255, 255, .8);
-      border-radius: 8px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .today small {
-      display: block;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .today strong {
-      display: block;
-      font-size: 1.1rem;
-      line-height: 1.5;
-    }
-
-    .shell {
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .panel,
-    .entry,
-    .toast,
-    .board-item {
-      background: rgba(255, 255, 255, .82);
-      border: 1px solid rgba(255, 255, 255, .9);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-    }
-
-    .panel {
-      padding: 18px;
-    }
-
-    .panel h2 {
-      margin: 0 0 14px;
-      font-size: 1.1rem;
-      letter-spacing: 0;
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .tab {
-      min-height: 42px;
-      border-radius: 8px;
-      background: var(--soft);
-      color: var(--ink);
-      border: 1px solid transparent;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .tab[aria-pressed="true"] {
-      background: var(--leaf-dark);
-      color: var(--white);
-      border-color: var(--leaf-dark);
-    }
-
-    label {
-      display: block;
-      margin: 0 0 8px;
-      color: var(--muted);
-      font-size: .92rem;
-      font-weight: 700;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 164px;
-      resize: vertical;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
-      background: var(--paper);
-      color: var(--ink);
-      line-height: 1.7;
-      outline: none;
-    }
-
-    textarea:focus,
-    input:focus {
-      border-color: var(--leaf);
-      box-shadow: 0 0 0 4px rgba(79, 143, 115, .16);
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .primary,
-    .secondary,
-    .ghost {
-      min-height: 42px;
-      border-radius: 8px;
-      padding: 0 14px;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .primary {
-      background: var(--leaf-dark);
-      color: var(--white);
-    }
-
-    .secondary {
-      background: #e9f1ef;
-      color: var(--leaf-dark);
-    }
-
-    .ghost {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--line);
-    }
-
-    .icon {
-      width: 18px;
-      height: 18px;
-      display: inline-block;
-      flex: 0 0 auto;
-    }
-
-    .result {
-      display: none;
-      margin-top: 14px;
-      padding: 14px;
-      background: #f7faf7;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-    }
-
-    .result.show {
-      display: block;
-    }
-
-    .result-title {
-      margin: 0 0 8px;
-      color: var(--leaf-dark);
-      font-weight: 800;
-    }
-
-    .result p {
-      margin: 0;
-      line-height: 1.8;
-    }
-
-    .tools {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .mini {
-      padding: 14px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, .58);
-    }
-
-    .mini strong {
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .mini p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: .92rem;
-    }
-
-    .stack {
-      display: grid;
-      gap: 18px;
-    }
-
-    .list {
-      display: grid;
-      gap: 10px;
-      max-height: 520px;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .entry,
-    .board-item {
-      padding: 14px;
-      box-shadow: none;
-      border-color: var(--line);
-    }
-
-    .meta {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-      color: var(--muted);
-      font-size: .82rem;
-    }
-
-    .badge {
-      display: inline-flex;
-      min-height: 26px;
-      align-items: center;
-      border-radius: 999px;
-      padding: 0 10px;
-      background: var(--soft);
-      color: var(--leaf-dark);
-      font-weight: 800;
-    }
-
-    .entry p,
-    .board-item p {
-      margin: 0;
-      line-height: 1.7;
-    }
-
-    .rewrite {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--line);
-      color: #40535a;
-    }
-
-    .empty {
-      color: var(--muted);
-      padding: 18px;
-      border: 1px dashed var(--line);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, .5);
-      line-height: 1.7;
-    }
-
-    .memory {
-      min-height: 98px;
-      padding: 14px;
-      border-radius: 8px;
-      border: 1px solid rgba(79, 143, 115, .24);
-      background: #f5faf6;
-      line-height: 1.7;
-    }
-
-    .field-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: end;
-      margin-top: 12px;
-    }
-
-    input {
-      width: 100%;
-      min-height: 42px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 0 12px;
-      background: var(--paper);
-      color: var(--ink);
-      outline: none;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translateX(-50%) translateY(20px);
-      opacity: 0;
-      pointer-events: none;
-      padding: 12px 16px;
-      color: var(--ink);
-      transition: .22s ease;
-      width: min(420px, calc(100% - 32px));
-      text-align: center;
-      z-index: 5;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    @media (max-width: 820px) {
-      .app {
-        width: min(100% - 24px, 680px);
-        padding-top: 18px;
-      }
-
-      .top,
-      .shell {
-        grid-template-columns: 1fr;
-      }
-
-      .tabs,
-      .tools {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .today {
-        padding: 14px;
-      }
-    }
-
-    @media (max-width: 460px) {
-      .tabs,
-      .tools,
-      .field-row {
-        grid-template-columns: 1fr;
-      }
-
-      .actions {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-
-      .primary,
-      .secondary,
-      .ghost {
-        width: 100%;
-      }
-    }
-  </style>
-</head>
-<body>
-  <main class="app">
-    <header class="top">
-      <div>
-        <div class="brand" aria-label="はれもよう">
-          <div class="weather-mark" aria-hidden="true">
-            <span class="sun"></span>
-            <span class="cloud"></span>
-          </div>
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">今日の小さな空</p>
           <h1>はれもよう</h1>
+          <p id="dailyMessage" class="daily-message">
+            まだ空っぽでも大丈夫。最初のひとつは、思い出よりも今の気分から始められます。
+          </p>
         </div>
-        <p class="lead">つらい気持ちも、うれしい出来事も、あとで自分の味方になる形で残しておく場所。</p>
-      </div>
-      <aside class="today">
-        <small>未来の私へ</small>
-        <strong id="dailyLine">今日の記録が、いつか今日の私を助けるかもしれない。</strong>
-      </aside>
-    </header>
-
-    <section class="shell">
-      <div class="panel">
-        <h2>今の気持ちを残す</h2>
-        <div class="tabs" role="group" aria-label="記録の種類">
-          <button class="tab" type="button" data-type="つらい" aria-pressed="true">つらい</button>
-          <button class="tab" type="button" data-type="うれしい" aria-pressed="false">うれしい</button>
-          <button class="tab" type="button" data-type="ありがとう" aria-pressed="false">ありがとう</button>
-          <button class="tab" type="button" data-type="できた" aria-pressed="false">できた</button>
-        </div>
-
-        <label for="noteText">言葉にできる分だけで大丈夫</label>
-        <textarea id="noteText" placeholder="例: 失敗して、ださいって思われたかもしれないと思って怖くなった。"></textarea>
-
-        <div class="actions">
-          <button class="secondary" type="button" id="voiceBtn" title="音声入力">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><path d="M12 19v3"></path></svg>
-            音声で入れる
-          </button>
-          <button class="primary" type="button" id="saveBtn">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path></svg>
-            記録する
-          </button>
-        </div>
-
-        <div class="result" id="resultBox" aria-live="polite">
-          <div class="result-title">はれもようから</div>
-          <p id="rewriteText"></p>
-        </div>
-
-        <div class="tools">
-          <div class="mini">
-            <strong>忘れた頃の味方</strong>
-            <p>うれしい記録やできた記録から、今の自分に返す言葉を選びます。</p>
-            <div class="actions">
-              <button class="ghost" type="button" id="memoryBtn">ひとつ見る</button>
-            </div>
+        <section class="growth-panel" aria-label="ふわはれの成長">
+          <div id="currentCharacter" class="fuwahare seed" aria-hidden="true">
+            <span class="face"></span>
           </div>
-          <div class="mini">
-            <strong>通知の雰囲気</strong>
-            <p>本格的な通知機能を入れる前の、画面内で試せるサンプルです。</p>
-            <div class="actions">
-              <button class="ghost" type="button" id="notifyBtn">通知を試す</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="memory" id="memoryBox">まだ記録がありません。まずは小さな出来事をひとつ残してみてください。</div>
-      </div>
-
-      <div class="stack">
-        <section class="panel">
-          <h2>記録</h2>
-          <div class="list" id="entries"></div>
-        </section>
-
-        <section class="panel">
-          <h2>みんなのうれしかったこと</h2>
-          <div class="list" id="board"></div>
-          <div class="field-row">
-            <div>
-              <label for="boardText">掲示板に残す</label>
-              <input id="boardText" placeholder="例: 友だちが私の挑戦を覚えてくれていた">
-            </div>
-            <button class="secondary" type="button" id="boardBtn">投稿</button>
+          <div>
+            <p id="growthName" class="growth-name">はれの芽</p>
+            <p id="growthCount" class="growth-count">0こ投稿で成長中</p>
           </div>
         </section>
-      </div>
-    </section>
-  </main>
+      </header>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    const storageKey = "haremoyou.entries";
-    const boardKey = "haremoyou.board";
-    const sampleBoard = [
-      { text: "落ち込んでいた日に、同僚が小さな進歩を見つけて言葉にしてくれた。", date: "サンプル" },
-      { text: "緊張していた発表のあと、友だちが「ちゃんと伝わってたよ」と言ってくれた。", date: "サンプル" }
-    ];
-
-    const tabs = Array.from(document.querySelectorAll(".tab"));
-    const noteText = document.querySelector("#noteText");
-    const saveBtn = document.querySelector("#saveBtn");
-    const voiceBtn = document.querySelector("#voiceBtn");
-    const notifyBtn = document.querySelector("#notifyBtn");
-    const memoryBtn = document.querySelector("#memoryBtn");
-    const resultBox = document.querySelector("#resultBox");
-    const rewriteText = document.querySelector("#rewriteText");
-    const entriesEl = document.querySelector("#entries");
-    const boardEl = document.querySelector("#board");
-    const boardText = document.querySelector("#boardText");
-    const boardBtn = document.querySelector("#boardBtn");
-    const memoryBox = document.querySelector("#memoryBox");
-    const toast = document.querySelector("#toast");
-    const dailyLine = document.querySelector("#dailyLine");
-
-    let activeType = "つらい";
-    let recognition = null;
-    let listening = false;
-
-    const lines = [
-      "今日の記録が、いつか今日の私を助けるかもしれない。",
-      "晴れの日だけじゃなく、曇りの日にも残せるものがある。",
-      "うまくいかなかった日は、挑戦した日でもある。",
-      "前に進んだ証拠は、忘れた頃に効いてくる。"
-    ];
-
-    dailyLine.textContent = lines[new Date().getDate() % lines.length];
-
-    function load(key, fallback) {
-      try {
-        return JSON.parse(localStorage.getItem(key)) || fallback;
-      } catch {
-        return fallback;
-      }
-    }
-
-    function save(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    function nowLabel() {
-      return new Intl.DateTimeFormat("ja-JP", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      }).format(new Date());
-    }
-
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-      window.clearTimeout(showToast.timer);
-      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2400);
-    }
-
-    function escapeHtml(value) {
-      return value.replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[char]));
-    }
-
-    function rewrite(type, text) {
-      const trimmed = text.trim();
-      if (type === "つらい") {
-        if (/失敗|ださい|怖|こわ|無理|不安|恥/.test(trimmed)) {
-          return "失敗が怖いと思うくらい、ちゃんと大事にしていることがあるんだと思う。今うまくいかなかったことは、あなたが下手な証拠じゃなくて、上手くなる途中にある材料です。";
-        }
-        return "今の気持ちは、なかったことにしなくていい。言葉にして残せた時点で、もう少しだけ自分の味方になれている。今日はここまでで十分です。";
-      }
-
-      if (type === "うれしい") {
-        return "これは未来の自分に渡したい、ちゃんとした証拠です。落ち込む日が来ても、今日のうれしさは消えません。";
-      }
-
-      if (type === "ありがとう") {
-        return "誰かにしてもらってうれしかったことを覚えていられるのは、あなたのやさしさでもあります。この記録は、また人を信じる力になります。";
-      }
-
-      return "できたことは、小さく見えても積み重なると自分を支える土台になります。今日の一歩を、ちゃんと残しておきましょう。";
-    }
-
-    function renderEntries() {
-      const entries = load(storageKey, []);
-      if (!entries.length) {
-        entriesEl.innerHTML = '<div class="empty">まだ記録がありません。最初のひとつは、短い言葉でも大丈夫です。</div>';
-        return;
-      }
-
-      entriesEl.innerHTML = entries.map((entry) => `
-        <article class="entry">
-          <div class="meta">
-            <span class="badge">${escapeHtml(entry.type)}</span>
-            <span>${escapeHtml(entry.date)}</span>
+      <main class="main-grid">
+        <section class="panel mood-panel">
+          <div class="section-head">
+            <h2>今のきもち</h2>
+            <span id="saveNotice" class="notice" aria-live="polite"></span>
           </div>
-          <p>${escapeHtml(entry.text)}</p>
-          <p class="rewrite">${escapeHtml(entry.rewrite)}</p>
-        </article>
-      `).join("");
-    }
 
-    function renderBoard() {
-      const board = load(boardKey, sampleBoard);
-      if (!board.length) {
-        boardEl.innerHTML = '<div class="empty">まだ投稿がありません。</div>';
-        return;
-      }
-
-      boardEl.innerHTML = board.map((item) => `
-        <article class="board-item">
-          <div class="meta">
-            <span class="badge">うれしかったこと</span>
-            <span>${escapeHtml(item.date)}</span>
+          <div class="segment" role="tablist" aria-label="種類">
+            <button class="segment-btn active" type="button" data-mood="happy">嬉しい</button>
+            <button class="segment-btn" type="button" data-mood="fun">楽しい</button>
+            <button class="segment-btn" type="button" data-mood="bad">嫌だった</button>
           </div>
-          <p>${escapeHtml(item.text)}</p>
-        </article>
-      `).join("");
-    }
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        activeType = tab.dataset.type;
-        tabs.forEach((item) => item.setAttribute("aria-pressed", String(item === tab)));
-        const examples = {
-          "つらい": "例: 失敗して、ださいって思われたかもしれないと思って怖くなった。",
-          "うれしい": "例: 自分で決めた小さな作業を終わらせられてうれしかった。",
-          "ありがとう": "例: 友だちが私の話を最後まで聞いてくれた。",
-          "できた": "例: 今日は5分だけでも手を動かせた。"
-        };
-        noteText.placeholder = examples[activeType];
-      });
-    });
+          <div id="badModeWrap" class="bad-mode hidden">
+            <div class="mini-segment" role="tablist" aria-label="嫌だった気持ちの扱い">
+              <button class="mini-btn active" type="button" data-bad-mode="free">無料</button>
+              <button class="mini-btn" type="button" data-bad-mode="paid">有料</button>
+            </div>
+            <p id="badModeDescription" class="bad-description">ふわはれが食べて、ここから消してくれます。</p>
+            <div id="coachSteps" class="coach-steps hidden">
+              <button type="button" class="step-btn active" data-step="1">1. まず気持ちを受け止める</button>
+              <button type="button" class="step-btn" data-step="2">2. 何がつらかったかをほどく</button>
+              <button type="button" class="step-btn" data-step="3">3. 次の自分を守る言葉にする</button>
+            </div>
+            <p id="coachPreview" class="coach-preview hidden"></p>
+          </div>
 
-    saveBtn.addEventListener("click", () => {
-      const text = noteText.value.trim();
-      if (!text) {
-        showToast("まずはひとこと残してみてください。");
-        return;
-      }
+          <label class="field-label" for="moodText">きもちを書く</label>
+          <textarea id="moodText" maxlength="160" rows="5" placeholder="ほんのひと言でも大丈夫です。"></textarea>
+          <div class="form-row count-row">
+            <span id="charCount">0/160</span>
+            <label class="photo-pick">
+              <input id="photoInput" type="file" accept="image/*" />
+              写真を添える
+            </label>
+          </div>
+          <div id="photoPreviewWrap" class="photo-preview-wrap hidden">
+            <img id="photoPreview" alt="添付した写真のプレビュー" />
+            <button id="removePhoto" type="button" class="text-button">写真を外す</button>
+          </div>
+          <label class="check-line">
+            <input id="shareCheck" type="checkbox" />
+            <span>ダレカにも届ける</span>
+          </label>
+          <button id="saveButton" class="primary-button" type="button">残す</button>
+        </section>
 
-      const message = rewrite(activeType, text);
-      const entries = load(storageKey, []);
-      entries.unshift({
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-        type: activeType,
-        text,
-        rewrite: message,
-        date: nowLabel()
-      });
-      save(storageKey, entries);
+        <section class="panel favorites-panel">
+          <h2>好きなものリスト</h2>
+          <div class="add-row">
+            <input id="favoriteInput" type="text" maxlength="30" placeholder="好きなものを追加" />
+            <button id="addFavorite" type="button">追加</button>
+          </div>
+          <div id="favoriteChips" class="chips" aria-live="polite"></div>
+        </section>
 
-      if (activeType === "ありがとう" || activeType === "うれしい") {
-        const board = load(boardKey, sampleBoard);
-        board.unshift({ text, date: nowLabel() });
-        save(boardKey, board);
-      }
+        <section class="panel calendar-panel">
+          <div class="calendar-title-row">
+            <h2>きろく</h2>
+            <div class="month-controls">
+              <button id="prevMonth" type="button" aria-label="前月">‹</button>
+              <span id="monthLabel"></span>
+              <button id="nextMonth" type="button" aria-label="次月">›</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays" aria-hidden="true">
+            <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+          </div>
+          <div id="calendarGrid" class="calendar-grid"></div>
+          <div class="filters" aria-label="きろくの絞り込み">
+            <button class="filter-btn active" type="button" data-filter="all">すべて</button>
+            <button class="filter-btn" type="button" data-filter="happy">嬉しい</button>
+            <button class="filter-btn" type="button" data-filter="fun">楽しい</button>
+            <button class="filter-btn" type="button" data-filter="lesson">学び</button>
+          </div>
+          <div id="recordsList" class="records-list" aria-live="polite"></div>
+        </section>
 
-      rewriteText.textContent = message;
-      resultBox.classList.add("show");
-      noteText.value = "";
-      renderEntries();
-      renderBoard();
-      showToast("記録しました。");
-    });
+        <section class="panel shared-panel">
+          <h2>ダレカの幸せ</h2>
+          <div id="sharedList" class="shared-list"></div>
+        </section>
+      </main>
+    </div>
 
-    memoryBtn.addEventListener("click", () => {
-      const entries = load(storageKey, []);
-      const candidates = entries.filter((entry) => entry.type !== "つらい");
-      const pool = candidates.length ? candidates : entries;
-      if (!pool.length) {
-        memoryBox.textContent = "まだ記録がありません。まずは小さな出来事をひとつ残してみてください。";
-        return;
-      }
-      const item = pool[Math.floor(Math.random() * pool.length)];
-      memoryBox.textContent = `前にこんな日がありました。「${item.text}」`;
-    });
-
-    boardBtn.addEventListener("click", () => {
-      const text = boardText.value.trim();
-      if (!text) {
-        showToast("掲示板に残す言葉を入れてください。");
-        return;
-      }
-      const board = load(boardKey, sampleBoard);
-      board.unshift({ text, date: nowLabel() });
-      save(boardKey, board);
-      boardText.value = "";
-      renderBoard();
-      showToast("掲示板に追加しました。");
-    });
-
-    notifyBtn.addEventListener("click", async () => {
-      const message = "前にできたことは、今日の自分の味方です。";
-      if (!("Notification" in window)) {
-        showToast(message);
-        return;
-      }
-
-      if (Notification.permission === "granted") {
-        new Notification("はれもよう", { body: message });
-        return;
-      }
-
-      if (Notification.permission !== "denied") {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-          new Notification("はれもよう", { body: message });
-          return;
-        }
-      }
-
-      showToast(message);
-    });
-
-    function setupSpeech() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        voiceBtn.addEventListener("click", () => showToast("このブラウザでは音声入力が使えません。"));
-        return;
-      }
-
-      recognition = new SpeechRecognition();
-      recognition.lang = "ja-JP";
-      recognition.interimResults = true;
-      recognition.continuous = false;
-
-      recognition.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map((result) => result[0].transcript)
-          .join("");
-        noteText.value = transcript;
-      };
-
-      recognition.onend = () => {
-        listening = false;
-        voiceBtn.textContent = "音声で入れる";
-      };
-
-      voiceBtn.addEventListener("click", () => {
-        if (listening) {
-          recognition.stop();
-          return;
-        }
-        listening = true;
-        voiceBtn.textContent = "聞いています";
-        recognition.start();
-      });
-    }
-
-    setupSpeech();
-    renderEntries();
-    renderBoard();
-  </script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>
